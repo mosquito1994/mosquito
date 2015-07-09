@@ -1,0 +1,69 @@
+/*箭头样式*/
+.mos-array-left,.mos-array-right{
+	position:absolute;
+	z-index: 999;
+	top:50%;
+	opacity:0;
+  top:0;
+  background-color:#808080;
+  transition:.5s;
+}
+.mos-array-left{
+	left:0;
+}
+.mos-array-right{
+	right:0;
+}
+.mos-array-left:hover,.mos-array-right:hover{
+	opacity:0.4;
+	cursor:pointer;
+
+}
+.mos-array-left img,.mos-array-right img{
+  position: absolute;
+  top:50%;
+  margin-top: -50px;
+}
+/*焦点列表样式*/
+.mos-focus-dot{
+	position: absolute;
+	left:50%;
+	top:80%;
+	z-index:999;
+	padding:10px;
+	background-color: #333;
+	border-radius: 20px;
+	opacity:0.4;
+	box-shadow: 2px 2px 2px #000;
+}
+.mos-focus-dot li{
+	width:20px;
+	height: 20px;	
+  border:2px solid #333;
+	float: left;
+	margin:0 15px;
+	border-radius:12px;
+	background-color:#fff;
+	cursor:pointer;
+  transition:.5s all;/*ie10*/
+  -webkit-transition:.5s all;
+}
+li.mos-dot-active{
+	background-color: #00CEFF;
+  border:2px solid #fff;
+}
+.mos-description{
+  position: absolute;
+  top:15%;
+  right:10%;
+  width: 15em;
+  padding:2em;
+  background-color: rgba(51,51,51,0.6);
+  color:#fff;
+  font-family: 微软雅黑;
+}
+.mos-description-head{
+  font-size: 1.5em;
+  font-weight: normal;
+  margin: .5em 0;
+}

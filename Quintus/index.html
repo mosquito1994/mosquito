@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Quintus test</title>
+</head>
+<body>
+	<script src="quintus.all.js"></script>
+        <script>
+            var Q = Quintus()
+                    .include("Sprites, Scenes, Input, 2D, Touch, UI, Anim")
+                    .setup({ maximize: true })
+                    .controls()
+                    .touch()
+            //给Q.Sprite这个类扩展一个新的类"player"用于处理玩家控制的角色
+            Q.Sprite.extend("Player", {
+                init: function (p) {//调用初始化方法定义人物属性，p只是参数，没有特别意义
+                    //指定使用的拼版，在json文件中设定
+                    this._super(p, { sprite: "aplayer", sheet: "player", x: 300, y: 90 }); //x，y是默认位置！
+                    this.add('2d, platformerControls,animation'); //添加基本的移动、跳跃、动画
+
+                    this.on("hit.sprite", function (collision) {//绑定事件
+                        if (collision.obj.isA("Tower")) {
+                            Q.state.inc("currentLevel", 1); //用++也可以
+                            Q.stageScene("nextLevel", 1, { label: "You Won!" }); //到达Tower即过关
+                            this.destroy();
+                        }
+                    });
+                },
+                step: function (dt) {
+                    if (this.p.vx > 0 && this.p.vy == 0) {
+                        this.play("run_right");
+                    } else if (this.p.vx < 0 && this.p.vy == 0) {
+                        this.play("run_left");
+                    } else if (this.p.vy < 0) {
+                        this.play("jump");
+                    } else if (this.p.vy > 0 && this.p.vx > 0) {
+                        this.play("fall_right");
+                    } else if (this.p.vy > 0 && this.p.vx < 0) {
+                        this.play("fall_left");
+                    } else {
+                        this.play("stand");
+                    }
+                }
+            });
+            //添加动画
+            Q.animations('aplayer', {
+                run_right: { frames: [2, 0], rate: 1 / 2 },
+                run_left: { frames: [1, 0], rate: 1 / 2 },
+                fall_right: { frames: [4], loop: false },
+                fall_left: { frames: [3], loop: false },
+                jump: { frames: [5], loop: false },
+                stand: { frames: [0], loop: false }
+            });
+            //扩展一个新的类"tower"，这是终点的判定
+            Q.Sprite.extend("Tower", {
+                init: function (p) {
+                    this._super(p, { sheet: 'tower' }); //使用的拼版
+                }
+            });
+
+            Q.Sprite.extend("Enemy", {//扩展一个新的类"eneny"
+                init: function (p) {
+                    this._super(p, { sheet: 'enemy', vx: 100 });
+                    this.add('2d, aiBounce'); //添加模块内容使之具有自动寻路功能
+
+                    this.on("bump.left,bump.right,bump.bottom", function (collision) {
+                        if (collision.obj.isA("Player")) { //人物不是从上方接触
+                            Q.state.dec("lives", 1); //角色死亡，扣除生命
+                            if (Q.state.p.lives > 0) {
+                                Q.stageScene("endGame", 1, { label: "You Have " + Q.state.p.lives + " Lives Left" });
+                            } else {
+                                Q.stageScene("endGame", 1, { label: "You Died" });
+                            }
+                            //清除碰撞者即玩家角色
+                            collision.obj.destroy();
+                        }
+                    });
+
+                    this.on("bump.top", function (collision) {
+                        if (collision.obj.isA("Player")) { //人物从上方接触
+                            this.destroy(); //清除敌人
+                            //给人物一个负y方向速度使之弹起
+                            collision.obj.p.vy = -300;
+                        }
+                    });
+                }
+            });
+            //设置第一关场景
+            Q.scene("level1", function (stage) {
+                //使用拼版名为"titles"，按照"level.json"中的0、1阵列构成地图
+                stage.collisionLayer(new Q.TileLayer({ dataAsset: 'level.json', sheet: 'tiles' }));
+                var player = stage.insert(new Q.Player()); //插入一个新的玩家角色
+                //引擎提供的视野跟随，可以随角色移动而移动视角
+                stage.add("viewport").follow(player);
+                //插入两个敌人并规定他们的初始位置
+                stage.insert(new Q.Enemy({ x: 700, y: 0 }));
+                stage.insert(new Q.Enemy({ x: 800, y: 0 }));
+                //插入终点标志并规定位置
+                stage.insert(new Q.Tower({ x: 180, y: 50 }));
+            });
+            //设置第二关场景
+            Q.scene("level2", function (stage) {
+                stage.collisionLayer(new Q.TileLayer({ dataAsset: 'level2.json', sheet: 'tiles' }));
+                var player = stage.insert(new Q.Player());
+                stage.add("viewport").follow(player);
+                stage.insert(new Q.Enemy({ x: 640, y: 96 }));
+                stage.insert(new Q.Enemy({ x: 760, y: 0 }));
+                stage.insert(new Q.Enemy({ x: 920, y: 0 }));
+                stage.insert(new Q.Tower({ x: 1088, y: 32 }));
+                console.log("level2");
+            });
+
+            //设置第三关场景
+            Q.scene("level3", function (stage) {
+                stage.collisionLayer(new Q.TileLayer({ dataAsset: 'level3.json', sheet: 'tiles' }));
+                var player = stage.insert(new Q.Player({ x: 64, y: 0 }));
+                stage.add("viewport").follow(player);
+                stage.insert(new Q.Enemy({ x: 480, y: 224 }));
+                stage.insert(new Q.Enemy({ x: 640, y: 32 }));
+                stage.insert(new Q.Enemy({ x: 320, y: 0 }));
+                stage.insert(new Q.Enemy({ x: 640, y: 352 }));
+                stage.insert(new Q.Tower({ x: 640, y: 0 }));
+            });
+
+            //设置游戏结束场景
+            Q.scene('endGame', function (stage) {
+                //从UI模块中调用对话框并设置位置和颜色
+                var box = stage.insert(new Q.UI.Container({
+                    x: Q.width / 2, y: Q.height / 2, fill: "rgba(0,0,0,0.5)"
+                }));
+                //调用按钮组件并设置位置、颜色和内容
+                var button = box.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCCCCC",
+                    label: "Play Again"
+                }))
+                var label = box.insert(new Q.UI.Text({ x: 10, y: -10 - button.p.h,
+                    label: stage.options.label
+                }));
+                button.on("click", function () {
+                    Q.clearStages(); //清除场景
+                    if (Q.state.p.lives > 0) {
+                        Q.stageScene("level" + Q.state.p.currentLevel)
+                    } else {
+                        Q.stageScene('level1'); //重新开始第一关
+                        Q.state.reset({ currentLevel: 1, lives: 2 });
+                    }
+                });
+                //增大对话框以适配屏幕显示，因为默认对话框较小
+                box.fit(20);
+            });
+            //新增nextLevel场景
+            Q.scene('nextLevel', function (stage) {
+                var box = stage.insert(new Q.UI.Container({
+                    x: Q.width / 2, y: Q.height / 2, fill: "rgba(0,0,0,0.5)"
+                }));
+                var button = box.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCCCCC",
+                    label: Q.state.p.currentLevel > 3 ? "Play From Beiginning" : "Next Level"
+                }))
+                var label = box.insert(new Q.UI.Text({ x: 10, y: -10 - button.p.h,
+                    label: stage.options.label
+                }));
+                console.log("here1");
+                button.on("click", function () {
+                    Q.clearStages(); //清除场景
+                    if (Q.state.p.currentLevel <= 3) {
+                        Q.stageScene('level' + Q.state.p.currentLevel); //进入下一关
+                    } else {
+                        Q.stageScene('level1');
+                    }
+                });
+                console.log("here2");
+                console.log(Q.state.p.currentLevel);
+                box.fit(20);
+            });
+            //加载资源，设置起始关卡
+            Q.load("sprites.png, sprites.json, level.json, level2.json, level3.json, tiles.png", function () {
+                Q.sheet("tiles", "tiles.png", { tilew: 32, tileh: 32 });
+                Q.compileSheets("sprites.png", "sprites.json");
+                Q.stageScene("level1");
+            });
+            Q.state.reset({ currentLevel: 1, lives: 2 });
+        </script>
+    </body>
+</html>

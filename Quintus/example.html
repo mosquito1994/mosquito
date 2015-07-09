@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Quintus test</title>
+</head>
+<body>
+	<canvas id="thecanvas" width="800" height="600"></canvas>
+	<script src="quintus.all.js"></script>
+        <script>
+        var Q = Quintus()
+                .include("Sprites, Scenes, Input, 2D, Touch, UI")
+                .setup({ maximize: true })
+                .controls()
+                .touch()
+        //给Q.Sprite这个类扩展一个新的类"player"用于处理玩家控制的角色
+        Q.Sprite.extend("Player",{
+          init: function(p) {//调用初始化方法定义人物属性，p只是参数，没有特别意义
+            //指定使用的拼版，在json文件中设定
+            this._super(p, { sheet: "player", x: 410, y: 90 });
+            this.add('2d, platformerControls');//添加基本的移动、跳跃等功能
+    
+            this.on("hit.sprite",function(collision) {//绑定事件
+              if(collision.obj.isA("Tower")) {
+                Q.stageScene("endGame",1, { label: "You Won!" }); //到达Tower即过关
+                this.destroy();
+              }
+            });
+          }
+        });
+        //扩展一个新的类"tower"，这是终点的判定
+        Q.Sprite.extend("Tower", {
+          init: function(p) {
+            this._super(p, { sheet: 'tower' });//使用的拼版
+          }
+        });
+
+        Q.Sprite.extend("Enemy",{//扩展一个新的类"eneny"
+          init: function(p) {
+            this._super(p, { sheet: 'enemy', vx: 100 });
+            this.add('2d, aiBounce');//添加模块内容使之具有自动寻路功能
+    
+            this.on("bump.left,bump.right,bump.bottom",function(collision) {
+              if(collision.obj.isA("Player")) { //人物不是从上方接触
+                //调用结束游戏场景并显示角色死亡消息
+                Q.stageScene("endGame",1, { label: "You Died" }); 
+                //清除碰撞者即玩家角色
+                collision.obj.destroy();
+              }
+            });
+    
+            this.on("bump.top",function(collision) {
+              if(collision.obj.isA("Player")) { //人物从上方接触
+                this.destroy();//清除敌人
+                //给人物一个负y方向速度使之弹起
+                collision.obj.p.vy = -300;
+              }
+            });
+          }
+        });
+        //设置第一关场景，提供游戏实例中也只有一关
+        Q.scene("level1",function(stage) {
+          //使用拼版名为"titles"，按照"level.json"中的0、1阵列构成地图
+          stage.collisionLayer(new Q.TileLayer({ dataAsset: 'level.json', sheet: 'tiles' }));
+          var player = stage.insert(new Q.Player());//插入一个新的玩家角色
+          //引擎提供的视野跟随，可以随角色移动而移动视角
+          stage.add("viewport").follow(player);
+          //插入两个敌人并规定他们的初始位置
+          stage.insert(new Q.Enemy({ x: 700, y: 0 }));
+          stage.insert(new Q.Enemy({ x: 800, y: 0 }));
+          //插入终点标志并规定位置
+          stage.insert(new Q.Tower({ x: 180, y: 50 }));
+        });
+        //设置游戏结束场景
+        Q.scene('endGame',function(stage) {
+          //从UI模块中调用对话框并设置位置和颜色
+          var box = stage.insert(new Q.UI.Container({
+            x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0.5)"
+          }));
+          //调用按钮组件并设置位置、颜色和内容
+          var button = box.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCCCCC",
+                                                   label: "Play Again" }))     
+          //由于结束可以由到达终点和碰到敌人角色死亡触发，文字内容由响应的情况定义
+          //内容在创建"enemy"和"tower"时已经有定义    
+          var label = box.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, 
+                                                label: stage.options.label }));
+          button.on("click",function() {
+            Q.clearStages();//清除场景
+            Q.stageScene('level1');//重新开始第一关
+          });
+          //增大对话框以适配屏幕显示，因为默认对话框较小
+          box.fit(20);
+        });
+        //加载资源，设置起始关卡
+        Q.load("sprites.png, sprites.json, level.json, tiles.png", function() {
+          Q.sheet("tiles","tiles.png", { tilew: 32, tileh: 32 });
+          Q.compileSheets("sprites.png","sprites.json");
+          Q.stageScene("level1");
+        });
+
+        </script>
+    </body>
+</html>
