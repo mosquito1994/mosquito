@@ -1,0 +1,98 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+#canvas {
+    border: 1px solid #333;
+}
+#colorPicker {
+    width: 318px;
+}
+
+#colorPicker, #penPicker {
+    float: left;
+    background-color:#ccc;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    position: relative;
+}
+#colorPicker a,#colorCtr {
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+}
+#colorPicker a, #penPicker a {
+    display: inline-block;
+}
+#colorCtr {
+    position: absolute;
+    left: 260px;
+    top: 48px;
+}
+#colorPicker a,#penPicker a{
+    border: 2px solid #ccc;
+}
+
+.cl1 {
+    background-color: #000;
+}
+.cl2 {
+    background-color: #808080;
+}
+.cl3 {
+    background-color: #fff;
+}
+.cl4 {
+    background-color: #f00;
+}
+.cl5 {
+    background-color: #ffd800;
+}
+.cl6 {
+    background-color: #00ff21;
+}
+.cl7 {
+    background-color: #0094ff;
+}
+.cl8 {
+    background-color: #4800ff;
+}
+.cl9 {
+    background-color: #b200ff;
+}
+.cl10 {
+    background-color: #ff00dc;
+}
+.cl11 {
+    background-color: #eaeaea;
+}
+#penPicker {
+    padding-left: 20px;
+}
+#penPicker td{
+    height: 90px;
+    width: 80px;
+}
+#penPicker a{
+   background-color: #000;
+}
+.pen1 {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+}
+.pen2 {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+}
+.pen3 {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+}
+.pen4 {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+}
