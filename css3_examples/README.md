@@ -1,1 +1,2 @@
-一个使用了轮播图插件和全屏滚动插件的页面
+- 一个使用了轮播图插件和全屏滚动插件的页面
+- [站点地址](http://mosquito1994.github.io/mosquito/css3_examples)
