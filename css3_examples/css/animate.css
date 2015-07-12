@@ -90,7 +90,7 @@
 	top:200px;
 	width: 200px;
 	height: 200px;
-	background-image:url(images/clock.png);
+	background-image:url(../images/clock.png);
 	background-size:200px 200px; 
 }
 .h,.m,.s{
