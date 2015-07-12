@@ -1,5 +1,5 @@
 @font-face{
-	src:url(WisdomScriptAJ.otf);
+	src:url(../font/WisdomScriptAJ.otf);
 	font-family: Wisdom;
 }
 *{
@@ -32,7 +32,7 @@ a{
 }
 #nav{
 	height:40px;
-	background-image: url(images/blue.png);
+	background-image: url(../images/blue.png);
 }
 ::selection{
 	color:#fff;
