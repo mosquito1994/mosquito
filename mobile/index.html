@@ -16,7 +16,7 @@
 				<li><a href="http://ssfw.xjtu.edu.cn/" >成绩查询</a></li>
 				<li><a href="http://xkfw.xjtu.edu.cn/" >选课端</a></li>
 				<li><a href="http://www.12306.cn/" >火车票</a></li>
-				<li><a href="">添加更多</a></li>
+				<li><a href="#add" data-rel="dialog">添加更多</a></li>
 				<li data-role="list-divider">分类导航</li>
 				<li><a href="#college" >本科书院</a></li>
 				<li><a href="#academy" >学院</a></li>
@@ -127,6 +127,24 @@
 		<footer data-role="footer">
 			<h1>footer</h1>
 		</footer>
+	</div>
+	<!--添加更多导航项-->
+	<div data-role="page" id="add">
+		<header data-role="header">
+			<h1>添加更多导航</h1>
+		</header>
+		<div data-role="content">
+			<form>
+				<fieldset data-role="fieldcontain">
+					<label for="site-name">站点名称</label>
+					<input id="site-name" placeholder="请输入站点名称" />
+					<label for="site-loc">站点地址</label>
+					<input id="site-loc" placeholder="请输入站点地址" />
+					<input id="site-submit" type="button" value="添加" />
+					<input id="site-submit" type="button" value="取消" />
+				</fieldset> 
+			</form>
+		</div>
 	</div>
 	<script src="http://apps.bdimg.com/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="http://apps.bdimg.com/libs/jquerymobile/1.4.3/jquery.mobile-1.4.3.min.js"></script>
