@@ -33,6 +33,7 @@ function setCookie(name, loc, page, expiresYears) { // 设置cookie
 		date.setTime(date.getTime() + expiresYears * 365 * 24 * 3600 * 1000);
 		cookieString += 'expires=' + date.toGMTString() + ';';
 	}
+	alert(cookieString);
 }
 
 function getCookie(name) { // 获取cookie
