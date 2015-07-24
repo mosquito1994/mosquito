@@ -132,6 +132,12 @@
 						currentPic=picNum+1;
 					}
 				});
+				// 防止bug出现，即滚出有图片内容范围 7.24 by mosquito
+				if (currentPic > (picNum + 2) && para == -1) {
+					currentPic = picNum + 1;
+				} else if (currentPic < 0 && para == 1) {
+					currentPic = 1;
+				}
 				//焦点跟随
 				if(currentPic==picNum+2){
 					dotNum=0;
