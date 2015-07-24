@@ -154,10 +154,8 @@
 			function findContent(obj){
 				var content=obj.find("img").next()||"",
 					firstChild=(content.length!="")?content.children().eq(0):"";
-					console.log(firstChild);
 				(content!="")?content.addClass("mos-description"):"";
 				if(firstChild!=""){
-					console.log(firstChild.get(0).tagName);
 					if(firstChild.get(0).tagName.match(/^h\d$/i)){
 						firstChild.addClass("mos-description-head");
 					}
