@@ -132,6 +132,12 @@
 						currentPic=picNum+1;
 					}
 				});
+				// 防止bug出现，即滚出有图片内容范围 7.24 by mosquito
+				if (currentPic > (picNum + 2) && para == -1) {
+					currentPic = picNum + 1;
+				} else if (currentPic < 0 && para == 1) {
+					currentPic = 1;
+				}
 				//焦点跟随
 				if(currentPic==picNum+2){
 					dotNum=0;
@@ -154,10 +160,8 @@
 			function findContent(obj){
 				var content=obj.find("img").next()||"",
 					firstChild=(content.length!="")?content.children().eq(0):"";
-					console.log(firstChild);
 				(content!="")?content.addClass("mos-description"):"";
 				if(firstChild!=""){
-					console.log(firstChild.get(0).tagName);
 					if(firstChild.get(0).tagName.match(/^h\d$/i)){
 						firstChild.addClass("mos-description-head");
 					}
